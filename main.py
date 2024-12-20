@@ -1,46 +1,30 @@
-import asyncio
-import logging
-from aiogram import Bot
-from aiogram import Dispatcher
-from aiogram import types
-from aiogram.filters import CommandStart, Command
-import config
+import telebot
+import webbrowser
+
+bot = telebot.TeleBot("8052382991:AAGHDKY1gwapQzBje0pVM4PFkXZrGq6-wnM")
 
 
-dp = Dispatcher()
-
-@dp.message(CommandStart())
-async def handle_start(message: types.Message):
-    await message.answer(text=f"Hello, {message.from_user.full_name}!")
-
-@dp.message(Command("help"))
-async def handel_help(message: types.Message):
-    text = "I`m echo bot.\nSend me any message!"
-    await message.answer(text=text)
-@dp.message()
-async def echo_message(message: types.Message):
-    #await bot.send_message(
-    #    chat_id=message.chat.id,
-    #    text="Start processing...",
-    #)
-    #await bot.send_message(
-    #    chat_id=message.chat.id,
-    #    text="Wait a second...",
-    #    reply_to_message_id=message.message_id,
-    #)
-    await message.answer(
-        text="Detected message...",
-    )
-    try:
-        await message.send_copy(chat_id=message.chat.id)
-    except TypeError:
-        await message.reply(text="Something new")
-    await message.reply(text=message.text)
-async def main():
-    logging.basicConfig(level=logging.INFO)
-    bot = Bot(token=config.TOKEN)
-    await dp.start_polling(bot)
+@bot.message_handler(commands=['site'])
+def site(message):
+    webbrowser.open('https://github.com/RuslanKravchuk2907')
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+@bot.message_handler(commands=['start'])
+def main(message):
+    bot.send_message(message.chat.id, f'Hello!, {message.from_user.first_name}')
+
+
+@bot.message_handler(commands=['help'])
+def main(message):
+    bot.send_message(message.chat.id)
+
+
+@bot.message_handler()
+def info(message):
+    if message.text.lower() == 'hello':
+        bot.send_message(message.chat.id, f'Hello!, {message.from_user.first_name}')
+    elif message.text.lower() == 'id':
+        bot.reply_to(message, f'ID: {message.from_user.id}')
+
+
+bot.polling(none_stop=True)
